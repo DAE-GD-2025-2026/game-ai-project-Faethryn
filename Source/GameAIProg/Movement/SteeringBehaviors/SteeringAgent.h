@@ -66,6 +66,10 @@ public:
 
 	float m_CachedMaxSpeed{ 500.0f };
 
+	float m_CachedMaxAngularVelocity{ 1.0f };
+
+	void CacheStartingValues();
+
 	void ResetCachedValues();
 
 protected:
@@ -96,5 +100,7 @@ public:
 	FColor GetMinArriveDebugColor();
 
 	float GetCachedMaxSpeed();
+
+	float GetCachedMaxAngularVelocity();
 
 };

@@ -14,13 +14,19 @@ ASteeringAgent::ASteeringAgent()
 void ASteeringAgent::BeginPlay()
 {
 	Super::BeginPlay();
-	m_CachedMaxSpeed = GetMaxLinearSpeed();
+	CacheStartingValues();
 }
 
 void ASteeringAgent::BeginDestroy()
 {
 	Super::BeginDestroy();
-	SetMaxLinearSpeed(m_CachedMaxSpeed);
+	ResetCachedValues();
+}
+
+void ASteeringAgent::CacheStartingValues()
+{
+	m_CachedMaxSpeed = GetMaxLinearSpeed();
+	m_CachedMaxAngularVelocity = GetMaxAngularSpeed();
 }
 
 // Called every frame
@@ -32,6 +38,7 @@ void ASteeringAgent::Tick(float DeltaTime)
 	{
 		SteeringOutput output = SteeringBehavior->CalculateSteering(DeltaTime, *this);
 		AddMovementInput(FVector{output.LinearVelocity, 0.f});
+		SetMaxAngularSpeed(output.AngularVelocity);
 	}
 }
 
@@ -50,6 +57,7 @@ void ASteeringAgent::SetSteeringBehavior(ISteeringBehavior* NewSteeringBehavior)
 void ASteeringAgent::ResetCachedValues()
 {
 	SetMaxLinearSpeed(m_CachedMaxSpeed);
+	SetMaxAngularSpeed(m_CachedMaxAngularVelocity);
 }
 
 float ASteeringAgent::GetMaxArriveDistance()
@@ -75,5 +83,10 @@ FColor ASteeringAgent::GetMinArriveDebugColor()
 float ASteeringAgent::GetCachedMaxSpeed()
 {
 	return m_CachedMaxSpeed;
+}
+
+float ASteeringAgent::GetCachedMaxAngularVelocity()
+{
+	return m_CachedMaxAngularVelocity;
 }
 
