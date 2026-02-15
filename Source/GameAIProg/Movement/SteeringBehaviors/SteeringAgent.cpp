@@ -38,7 +38,13 @@ void ASteeringAgent::Tick(float DeltaTime)
 	{
 		SteeringOutput output = SteeringBehavior->CalculateSteering(DeltaTime, *this);
 		AddMovementInput(FVector{output.LinearVelocity, 0.f});
-		SetMaxAngularSpeed(output.AngularVelocity);
+		//SetMaxAngularSpeed(output.AngularVelocity);
+
+		if (!IsAutoOrienting())
+		{
+			float speedOfRotation = output.AngularVelocity / GetAngularVelocity();
+			FaceRotation(FRotator{ GetControlRotation().Pitch,GetControlRotation().Yaw + output.AngularVelocity, GetControlRotation().Roll }, speedOfRotation);
+		}
 	}
 }
 
@@ -78,6 +84,11 @@ FColor ASteeringAgent::GetMaxArriveDebugColor()
 FColor ASteeringAgent::GetMinArriveDebugColor()
 {
 	return m_MinArriveDebugColor;
+}
+
+FColor ASteeringAgent::GetDirectionLineDebugColor()
+{
+	return m_MoveDirectionDebugColor;
 }
 
 float ASteeringAgent::GetCachedMaxSpeed()

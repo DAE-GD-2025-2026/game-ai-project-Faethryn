@@ -64,6 +64,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	FColor m_MaxArriveDebugColor{ 0, 255, 0 };
 
+	UPROPERTY(EditAnywhere)
+	FColor m_MoveDirectionDebugColor{ 0, 0, 255 };
+
 	float m_CachedMaxSpeed{ 500.0f };
 
 	float m_CachedMaxAngularVelocity{ 1.0f };
@@ -98,6 +101,8 @@ public:
 	FColor GetMaxArriveDebugColor();
 
 	FColor GetMinArriveDebugColor();
+
+	FColor GetDirectionLineDebugColor();
 
 	float GetCachedMaxSpeed();
 
