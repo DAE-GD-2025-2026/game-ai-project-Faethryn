@@ -14,11 +14,13 @@ ASteeringAgent::ASteeringAgent()
 void ASteeringAgent::BeginPlay()
 {
 	Super::BeginPlay();
+	m_CachedMaxSpeed = GetMaxLinearSpeed();
 }
 
 void ASteeringAgent::BeginDestroy()
 {
 	Super::BeginDestroy();
+	SetMaxLinearSpeed(m_CachedMaxSpeed);
 }
 
 // Called every frame
@@ -42,5 +44,36 @@ void ASteeringAgent::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ASteeringAgent::SetSteeringBehavior(ISteeringBehavior* NewSteeringBehavior)
 {
 	SteeringBehavior = NewSteeringBehavior;
+	ResetCachedValues();
+}
+
+void ASteeringAgent::ResetCachedValues()
+{
+	SetMaxLinearSpeed(m_CachedMaxSpeed);
+}
+
+float ASteeringAgent::GetMaxArriveDistance()
+{
+	return m_MaxTargetArriveDistance;
+}
+
+float ASteeringAgent::GetMinArriveDistance()
+{
+	return m_MinTargetArriveDistance;
+}
+
+FColor ASteeringAgent::GetMaxArriveDebugColor()
+{
+	return m_MaxArriveDebugColor;
+}
+
+FColor ASteeringAgent::GetMinArriveDebugColor()
+{
+	return m_MinArriveDebugColor;
+}
+
+float ASteeringAgent::GetCachedMaxSpeed()
+{
+	return m_CachedMaxSpeed;
 }
 

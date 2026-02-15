@@ -55,7 +55,5 @@ public:
 	//steering
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
 
-	const float m_MaxDistance{ 10.0f };
-	const float m_MinDistance{ 3.0f };
 };
 

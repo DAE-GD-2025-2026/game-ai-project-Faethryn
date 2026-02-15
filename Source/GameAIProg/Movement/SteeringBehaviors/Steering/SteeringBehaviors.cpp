@@ -29,19 +29,38 @@ SteeringOutput Arrive::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	float distance = FVector2D::Distance(Target.Position, Agent.GetPosition());
 	float speed{ 0.0f };
 
-	if (distance > m_MinDistance)
+	float debugMaxRadius = Agent.GetMaxArriveDistance();
+
+	float debugMinRadius = Agent.GetMinArriveDistance();
+
+	FVector debugSphereCenter = FVector{ Target.Position.X, Target.Position.Y, Agent.GetActorLocation().Z };
+
+	DrawDebugSphere(Agent.GetWorld(), debugSphereCenter, debugMaxRadius, 12, Agent.GetMaxArriveDebugColor());
+	DrawDebugSphere(Agent.GetWorld(), debugSphereCenter, debugMinRadius, 12, Agent.GetMinArriveDebugColor());
+
+	if (distance > Agent.GetMinArriveDistance())
 	{
-		if (distance > m_MaxDistance)
+		if (distance >= Agent.GetMaxArriveDistance())
 		{
-			speed = Agent.GetMaxLinearSpeed();
+			speed = Agent.GetCachedMaxSpeed();
 		}
 		else
 		{
-			speed = ((distance - m_MinDistance) / (m_MaxDistance - m_MinDistance)) * Agent.GetMaxLinearSpeed();
+			speed = ((distance - Agent.GetMinArriveDistance()) / (Agent.GetMaxArriveDistance() - Agent.GetMinArriveDistance())) * Agent.GetCachedMaxSpeed();
 		}
-		Steering.LinearVelocity = (Target.Position - Agent.GetPosition()) * speed;
+
+		Agent.SetMaxLinearSpeed(speed);
+
+		FVector2D direction = (Target.Position - Agent.GetPosition());
+		direction.Normalize();
+		Steering.LinearVelocity = direction;
+
+		/*UE_LOG(LogTemp, Warning, TEXT("The speed value is: %f"), speed);
+		UE_LOG(LogTemp, Warning, TEXT("The velocity value is: %s"), *velocity.ToString());*/
+
+		return Steering;
 	}
 
-	Steering.LinearVelocity = FVector2D::Zero();
+	Agent.SetMaxLinearSpeed(speed);
 	return Steering;
 }

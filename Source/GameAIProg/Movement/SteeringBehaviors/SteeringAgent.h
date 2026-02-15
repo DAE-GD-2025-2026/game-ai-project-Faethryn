@@ -52,6 +52,22 @@ public:
 	// Sets default values for this character's properties
 	ASteeringAgent();
 
+	UPROPERTY(EditAnywhere)
+	float m_MaxTargetArriveDistance{ 500.0f };
+
+	UPROPERTY(EditAnywhere)
+	float m_MinTargetArriveDistance{ 100.0f };
+
+	UPROPERTY(EditAnywhere)
+	FColor m_MinArriveDebugColor{ 255, 0, 0 };
+
+	UPROPERTY(EditAnywhere)
+	FColor m_MaxArriveDebugColor{ 0, 255, 0 };
+
+	float m_CachedMaxSpeed{ 500.0f };
+
+	void ResetCachedValues();
+
 protected:
 
 	ISteeringBehavior* SteeringBehavior{nullptr}; // non-owning
@@ -70,4 +86,15 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	void SetSteeringBehavior(ISteeringBehavior* NewSteeringBehavior);
+
+	float GetMaxArriveDistance();
+
+	float GetMinArriveDistance();
+
+	FColor GetMaxArriveDebugColor();
+
+	FColor GetMinArriveDebugColor();
+
+	float GetCachedMaxSpeed();
+
 };
