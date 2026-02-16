@@ -84,4 +84,24 @@ public:
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
 };
 
+class Wander : public Flee
+{
+public:
+	Wander() = default;
+	virtual ~Wander() = default;
+
+	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
+
+	void SetWanderOffset(float Offset) { m_OffsetDistance = Offset; };
+	void SetWanderRadius(float Radius) { m_Radius = Radius; };
+	void SetMaxAngle(float Angle) { m_MaxAngle = Angle; };
+
+private:
+
+	float m_OffsetDistance{ 6.0f };
+	float m_Radius{ 4.0f };
+	float m_MaxAngle = 45;
+	float m_WanderAngle = 0.f;
+};
+
 

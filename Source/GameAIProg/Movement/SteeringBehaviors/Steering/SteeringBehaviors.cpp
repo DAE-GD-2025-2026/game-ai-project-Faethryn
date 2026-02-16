@@ -107,6 +107,19 @@ SteeringOutput  Face::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 
 	targetDirection.Normalize();
 
+	float targetRotation =  (atan2f(targetDirection.Y, targetDirection.X) * 180) / PI;
+
+	//UE_LOG(LogTemp, Warning, TEXT("The target angle value is: %f"), targetRotation);
+	
+	float agentRotation = Agent.GetRotation();
+
+	//UE_LOG(LogTemp, Warning, TEXT("The agent angle value is: %f"), agentRotation);
+
+
+	float rotationDifference = agentRotation - targetRotation;
+
+	Steering.AngularVelocity = rotationDifference / Agent.GetMaxAngularSpeed();
+
 	Steering.LinearVelocity = targetDirection;
 
 
@@ -164,6 +177,26 @@ SteeringOutput Evade::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	FVector targetDebugLineStart{ Agent.GetPosition().X, Agent.GetPosition().Y, Agent.GetActorLocation().Z };
 	FVector targetDebugLineEnd{ Agent.GetPosition().X + Agent.GetLinearVelocity().X, Agent.GetPosition().Y + Agent.GetLinearVelocity().Y, Agent.GetActorLocation().Z };
 	DrawDebugLine(Agent.GetWorld(), targetDebugLineStart, targetDebugLineEnd, Agent.GetDirectionLineDebugColor());
+
+	float distanceThisFrame = Agent.GetMaxLinearSpeed();
+
+	Steering.LinearVelocity = targetDirection * distanceThisFrame;
+
+	return Steering;
+}
+
+SteeringOutput Wander::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
+{
+	SteeringOutput Steering{};
+
+	FVector2D targetDirection = Target.Position - Agent.GetPosition();
+
+	targetDirection.Normalize();
+
+	FVector targetDebugLineStart{ Agent.GetPosition().X, Agent.GetPosition().Y, Agent.GetActorLocation().Z };
+	FVector targetDebugLineEnd{ Agent.GetPosition().X + Agent.GetLinearVelocity().X, Agent.GetPosition().Y + Agent.GetLinearVelocity().Y, Agent.GetActorLocation().Z };
+	DrawDebugLine(Agent.GetWorld(), targetDebugLineStart, targetDebugLineEnd, Agent.GetDirectionLineDebugColor());
+
 
 	float distanceThisFrame = Agent.GetMaxLinearSpeed();
 

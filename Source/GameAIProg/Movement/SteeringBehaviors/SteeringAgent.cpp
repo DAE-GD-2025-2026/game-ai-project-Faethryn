@@ -39,12 +39,7 @@ void ASteeringAgent::Tick(float DeltaTime)
 		SteeringOutput output = SteeringBehavior->CalculateSteering(DeltaTime, *this);
 		AddMovementInput(FVector{output.LinearVelocity, 0.f});
 		//SetMaxAngularSpeed(output.AngularVelocity);
-
-		if (!IsAutoOrienting())
-		{
-			float speedOfRotation = output.AngularVelocity / GetAngularVelocity();
-			FaceRotation(FRotator{ GetControlRotation().Pitch,GetControlRotation().Yaw + output.AngularVelocity, GetControlRotation().Roll }, speedOfRotation);
-		}
+		AddControllerYawInput(output.AngularVelocity);
 	}
 }
 
@@ -64,6 +59,7 @@ void ASteeringAgent::ResetCachedValues()
 {
 	SetMaxLinearSpeed(m_CachedMaxSpeed);
 	SetMaxAngularSpeed(m_CachedMaxAngularVelocity);
+	SetIsAutoOrienting(true);
 }
 
 float ASteeringAgent::GetMaxArriveDistance()
