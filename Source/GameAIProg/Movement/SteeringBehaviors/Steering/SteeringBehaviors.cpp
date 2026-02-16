@@ -119,7 +119,9 @@ SteeringOutput Pursuit::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 
 	//Steering.AngularVelocity = Agent.GetCachedMaxAngularVelocity();
 
-	FVector2D targetPosition = ( Target.LinearVelocity * DeltaT) + Target.Position;
+	float timeToReachTarget = FVector2D{}.Distance(Agent.GetPosition(), Target.Position) / Agent.GetMaxLinearSpeed();
+
+	FVector2D targetPosition = ( Target.LinearVelocity * timeToReachTarget) + Target.Position;
 
 	FVector2D targetDirection = targetPosition - Agent.GetPosition();
 
@@ -145,8 +147,11 @@ SteeringOutput Evade::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	SteeringOutput Steering{};
 
 	//Steering.AngularVelocity = Agent.GetCachedMaxAngularVelocity();
+	FVector2D PredictedPosition = (Target.LinearVelocity * DeltaT) + Target.Position;
 
-	FVector2D targetPosition = (Target.LinearVelocity * DeltaT) + Target.Position;
+	float timeToReachTarget = FVector2D{}.Distance(Agent.GetPosition(), PredictedPosition) / Agent.GetMaxLinearSpeed();
+
+	FVector2D targetPosition = (Target.LinearVelocity * timeToReachTarget) + Target.Position;
 
 	FVector2D targetDirection = Agent.GetPosition() - targetPosition;
 
