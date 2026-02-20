@@ -99,6 +99,8 @@ SteeringOutput  Face::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
 	SteeringOutput Steering{};
 
+	Agent.SetIsAutoOrienting(false);
+
 	//Steering.AngularVelocity = Agent.GetCachedMaxAngularVelocity();
 
 	Agent.SetMaxLinearSpeed(0.0f);
@@ -115,13 +117,31 @@ SteeringOutput  Face::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 
 	//UE_LOG(LogTemp, Warning, TEXT("The agent angle value is: %f"), agentRotation);
 
-
 	float rotationDifference = agentRotation - targetRotation;
 
-	Steering.AngularVelocity = rotationDifference / Agent.GetMaxAngularSpeed();
+	if (rotationDifference > 180.0f)
+	{
+		rotationDifference -= 360.0f;
+	}
 
-	Steering.LinearVelocity = targetDirection;
+	if (rotationDifference < -180.0f)
+	{
+		rotationDifference += 360.0f;
+	}
 
+	Steering.LinearVelocity = FVector2D{}.Zero();
+
+	if (rotationDifference < 0)
+	{
+		Steering.AngularVelocity = - Agent.GetMaxAngularSpeed() * DeltaT;
+	}
+	else
+	{
+		Steering.AngularVelocity = Agent.GetMaxAngularSpeed() * DeltaT;
+	}
+
+	//Steering.AngularVelocity = rotationDifference / Agent.GetMaxAngularSpeed();
+	UE_LOG(LogTemp, Warning, TEXT("The AngularVelocity angle value is: %f"), Steering.AngularVelocity);
 
 	return Steering;
 }
