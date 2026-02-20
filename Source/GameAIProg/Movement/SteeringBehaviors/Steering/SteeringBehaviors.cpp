@@ -215,7 +215,32 @@ SteeringOutput Wander::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
 	SteeringOutput Steering{};
 
-	FVector2D targetDirection = Target.Position - Agent.GetPosition();
+	float randAngle = FMath::FRandRange(-m_MaxAngleChange, m_MaxAngleChange);
+
+	float newAngle = m_WanderAngle + randAngle;
+
+	float newAngleRadians = newAngle * PI / 180.0f;
+
+	m_WanderAngle = newAngle;
+
+	float agentRotationRadians = Agent.GetRotation() * PI / 180.0f;
+
+	FVector2D CirclePosition = Agent.GetPosition() + (FVector2D{ cos(agentRotationRadians), sin(agentRotationRadians) } * m_OffsetDistance);
+
+	FVector forwardDebugLineStart{ Agent.GetPosition().X, Agent.GetPosition().Y, Agent.GetActorLocation().Z };
+	FVector forwardDebugLineEnd{ CirclePosition.X, CirclePosition.Y, Agent.GetActorLocation().Z };
+	
+	DrawDebugLine(Agent.GetWorld(), forwardDebugLineStart, forwardDebugLineEnd, Agent.GetMaxArriveDebugColor());
+
+	DrawDebugSphere(Agent.GetWorld(), FVector(CirclePosition.X, CirclePosition.Y, Agent.GetActorLocation().Z), m_Radius, 12, Agent.GetDirectionLineDebugColor());
+
+	FVector2D newTarget = CirclePosition + (FVector2D{ cos(newAngleRadians), sin(newAngleRadians) } * m_Radius);
+
+	DrawDebugSphere(Agent.GetWorld(), FVector(newTarget.X, newTarget.Y, Agent.GetActorLocation().Z), 10.0f, 12, Agent.GetMaxArriveDebugColor());
+
+	Target.Position = newTarget;
+
+	FVector2D targetDirection = newTarget - Agent.GetPosition();
 
 	targetDirection.Normalize();
 
