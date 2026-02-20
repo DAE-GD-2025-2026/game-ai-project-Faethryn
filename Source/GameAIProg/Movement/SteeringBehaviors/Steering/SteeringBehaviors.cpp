@@ -107,6 +107,12 @@ SteeringOutput  Face::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 
 	FVector2D targetDirection = Target.Position - Agent.GetPosition();
 
+
+	FVector targetDebugLineStart{ Agent.GetPosition().X, Agent.GetPosition().Y, Agent.GetActorLocation().Z };
+	FVector targetDebugLineEnd{ Agent.GetPosition().X + targetDirection.X, Agent.GetPosition().Y + targetDirection.Y, Agent.GetActorLocation().Z };
+	DrawDebugLine(Agent.GetWorld(), targetDebugLineStart, targetDebugLineEnd, Agent.GetDirectionLineDebugColor());
+
+
 	targetDirection.Normalize();
 
 	float targetRotation =  (atan2f(targetDirection.Y, targetDirection.X) * 180) / PI;
@@ -133,11 +139,11 @@ SteeringOutput  Face::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 
 	if (rotationDifference < 0)
 	{
-		Steering.AngularVelocity = - Agent.GetMaxAngularSpeed() * DeltaT;
+		Steering.AngularVelocity = + Agent.GetMaxAngularSpeed() * DeltaT;
 	}
 	else
 	{
-		Steering.AngularVelocity = Agent.GetMaxAngularSpeed() * DeltaT;
+		Steering.AngularVelocity = - Agent.GetMaxAngularSpeed() * DeltaT;
 	}
 
 	//Steering.AngularVelocity = rotationDifference / Agent.GetMaxAngularSpeed();
