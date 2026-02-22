@@ -82,6 +82,11 @@ public:
 	virtual ~Evade() override = default;
 
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
+
+	void SetMaxAvoidanceDistance(float distance) { m_AvoidanceDistance = distance; };
+
+protected:
+	float m_AvoidanceDistance = 500;
 };
 
 class Wander : public Seek

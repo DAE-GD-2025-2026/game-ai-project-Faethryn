@@ -185,6 +185,13 @@ SteeringOutput Evade::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
 	SteeringOutput Steering{};
 
+	float distance = FVector2D::Distance(Target.Position, Agent.GetPosition());
+
+	if (distance > m_AvoidanceDistance)
+	{
+		Steering.IsValid = false;
+	}
+
 	//Steering.AngularVelocity = Agent.GetCachedMaxAngularVelocity();
 	FVector2D PredictedPosition = (Target.LinearVelocity * DeltaT) + Target.Position;
 
