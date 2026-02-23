@@ -17,6 +17,8 @@ void ALevel_CombinedSteering::BeginPlay()
 
 	AddAgent();
 	AddAgent(CombinedBehaviourType::RangedEvade);
+
+	m_CombinedSteeringAgents[1].TargetAgent = 0;
 }
 
 void ALevel_CombinedSteering::BeginDestroy()
