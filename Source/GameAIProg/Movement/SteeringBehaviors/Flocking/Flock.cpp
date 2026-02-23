@@ -193,5 +193,12 @@ VelocityMatch::VelocityMatch(Flock& assignedFlock)
 
 SteeringOutput VelocityMatch::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
-	return SteeringOutput();
+	SteeringOutput output{};
+	FVector2D averageVelocity{};
+
+	averageVelocity = pFlock->GetAverageNeighborVelocity();
+
+	output.LinearVelocity = averageVelocity;
+
+	return output;
 }
