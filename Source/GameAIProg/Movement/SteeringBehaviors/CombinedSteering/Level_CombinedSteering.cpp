@@ -15,12 +15,82 @@ void ALevel_CombinedSteering::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AddAgent();
+	AddAgent(CombinedBehaviourType::RangedEvade);
 }
 
 void ALevel_CombinedSteering::BeginDestroy()
 {
 	Super::BeginDestroy();
 
+}
+
+void ALevel_CombinedSteering::SetAgentBehavior(CombinedSteeringAgent& Agent)
+{
+	switch ((static_cast<CombinedBehaviourType>(Agent.SelectedBehavior)))
+	{
+	case CombinedBehaviourType::Drunk:
+		Agent.Behaviour = std::make_unique<BlendedSteering>(std::vector<BlendedSteering::WeightedBehavior>{BlendedSteering::WeightedBehavior(new Seek(), 0.5f), BlendedSteering::WeightedBehavior(new Wander(), 0.5f)});
+		break;
+	case CombinedBehaviourType::RangedEvade:
+		Agent.Behaviour = std::make_unique<PrioritySteering>(std::vector<ISteeringBehavior*>{new Evade(), new Wander()});
+		break;
+	default:
+		Agent.Behaviour = std::make_unique<BlendedSteering>(std::vector<BlendedSteering::WeightedBehavior>{BlendedSteering::WeightedBehavior(new Seek(), 0.5f), BlendedSteering::WeightedBehavior(new Wander(), 0.5f)});
+		break;
+	}
+
+	UpdateTarget(Agent);
+
+	Agent.Agent->SetSteeringBehavior(Agent.Behaviour.get());
+}
+
+bool ALevel_CombinedSteering::AddAgent(CombinedBehaviourType BehaviorType)
+{
+	CombinedSteeringAgent agent{};
+	agent.Agent = GetWorld()->SpawnActor<ASteeringAgent>(SteeringAgentClass, FVector{ 0,0,90 }, FRotator::ZeroRotator);
+	if (IsValid(agent.Agent))
+	{
+		agent.SelectedBehavior = static_cast<int>(BehaviorType);
+
+		agent.TargetAgent = -1;
+
+		SetAgentBehavior(agent);
+
+		m_CombinedSteeringAgents.push_back(std::move(agent));
+
+		return true;
+	}
+	
+	return false;
+}
+
+void ALevel_CombinedSteering::RemoveAgent(unsigned int Index)
+{
+	m_CombinedSteeringAgents[Index].Agent->Destroy();
+	
+	m_CombinedSteeringAgents.erase(m_CombinedSteeringAgents.begin() + Index);
+}
+
+void ALevel_CombinedSteering::UpdateTarget(CombinedSteeringAgent& Agent)
+{
+	bool const bUseMouseAsTarget = Agent.TargetAgent < 0;
+	if (!bUseMouseAsTarget)
+	{
+		ASteeringAgent* const TargetAgent = m_CombinedSteeringAgents[Agent.TargetAgent].Agent;
+
+		FTargetData Target;
+		Target.Position = TargetAgent->GetPosition();
+		Target.Orientation = TargetAgent->GetRotation();
+		Target.LinearVelocity = TargetAgent->GetLinearVelocity();
+		Target.AngularVelocity = TargetAgent->GetAngularVelocity();
+
+		Agent.Behaviour->SetTarget(Target);
+	}
+	else
+	{
+		Agent.Behaviour->SetTarget(MouseTarget);
+	}
 }
 
 // Called every frame
@@ -85,16 +155,24 @@ void ALevel_CombinedSteering::Tick(float DeltaTime)
 		ImGui::Spacing();
 
 
-		// ImGuiHelpers::ImGuiSliderFloatWithSetter("Seek",
-		// 	pBlendedSteering->GetWeightedBehaviorsRef()[0].Weight, 0.f, 1.f,
-		// 	[this](float InVal) { pBlendedSteering->GetWeightedBehaviorsRef()[0].Weight = InVal; }, "%.2f");
-		//
-		// ImGuiHelpers::ImGuiSliderFloatWithSetter("Wander",
-		// pBlendedSteering->GetWeightedBehaviorsRef()[1].Weight, 0.f, 1.f,
-		// [this](float InVal) { pBlendedSteering->GetWeightedBehaviorsRef()[1].Weight = InVal; }, "%.2f");
+		 ImGuiHelpers::ImGuiSliderFloatWithSetter("Seek",
+			 m_CombinedSteeringAgents[0].Behaviour->As<BlendedSteering>()->GetWeightedBehaviorsRef()[0].Weight, 0.f, 1.f,
+		 	[this](float InVal) { m_CombinedSteeringAgents[0].Behaviour->As<BlendedSteering>()->GetWeightedBehaviorsRef()[0].Weight = InVal; }, "%.2f");
+		
+		 ImGuiHelpers::ImGuiSliderFloatWithSetter("Wander",
+			 m_CombinedSteeringAgents[0].Behaviour->As<BlendedSteering>()->GetWeightedBehaviorsRef()[1].Weight, 0.f, 1.f,
+		 [this](float InVal) { m_CombinedSteeringAgents[0].Behaviour->As<BlendedSteering>()->GetWeightedBehaviorsRef()[1].Weight = InVal; }, "%.2f");
 	
 		//End
 		ImGui::End();
+
+		for (CombinedSteeringAgent& agent : m_CombinedSteeringAgents)
+		{
+			if (agent.Agent)
+			{
+				UpdateTarget(agent);
+			}
+		}
 	}
 #pragma endregion
 	
