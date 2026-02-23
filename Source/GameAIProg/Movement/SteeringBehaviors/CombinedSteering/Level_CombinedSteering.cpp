@@ -76,7 +76,7 @@ void ALevel_CombinedSteering::RemoveAgent(unsigned int Index)
 
 void ALevel_CombinedSteering::UpdateTarget(CombinedSteeringAgent& Agent)
 {
-	bool const bUseMouseAsTarget = Agent.TargetAgent < 0;
+	bool const bUseMouseAsTarget = (Agent.TargetAgent == -1);
 	if (!bUseMouseAsTarget)
 	{
 		ASteeringAgent* const TargetAgent = m_CombinedSteeringAgents[Agent.TargetAgent].Agent;
@@ -170,10 +170,9 @@ void ALevel_CombinedSteering::Tick(float DeltaTime)
 
 		for (CombinedSteeringAgent& agent : m_CombinedSteeringAgents)
 		{
-			if (agent.Agent)
-			{
-				UpdateTarget(agent);
-			}
+			
+			UpdateTarget(agent);
+			
 		}
 	}
 #pragma endregion
