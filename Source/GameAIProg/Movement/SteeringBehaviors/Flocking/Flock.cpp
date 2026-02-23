@@ -16,7 +16,13 @@ Flock::Flock(
 {
 	Agents.SetNum(FlockSize);
 
+	Neighbors.SetNum(FlockSize);
  // TODO: initialize the flock and the memory pool
+
+	for (int i{ 0 } ; i < FlockSize; i++)
+	{
+		Agents[i] = pWorld->SpawnActor<ASteeringAgent>(AgentClass, FVector{ 0,0,90 }, FRotator::ZeroRotator);
+	}
 }
 
 Flock::~Flock()
@@ -124,3 +130,68 @@ void Flock::SetTarget_Seek(FSteeringParams const& Target)
  // TODO: Implement
 }
 
+Separation::Separation(Flock& assignedFlock)
+{
+	pFlock = &assignedFlock;
+}
+
+SteeringOutput Separation::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
+{
+	SteeringOutput output{};
+	FVector2D averagePosition{};
+
+	averagePosition = pFlock->GetAverageNeighborPos();
+
+	FVector2D directionToMove{};
+
+	directionToMove = Agent.GetPosition() - averagePosition;
+
+	directionToMove.Normalize();
+
+	output.LinearVelocity = directionToMove;
+	
+	return output;
+}
+
+void Separation::SetCohesionDistance(float newDistance)
+{
+	m_CohesionDistance = newDistance;
+}
+
+Cohesion::Cohesion(Flock& assignedFlock)
+{
+	pFlock = &assignedFlock;
+}
+
+void Cohesion::SetCohesionDistance(float newDistance)
+{
+	m_CohesionDistance = newDistance;
+}
+
+SteeringOutput Cohesion::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
+{
+	SteeringOutput output{};
+	FVector2D averagePosition{};
+
+	averagePosition = pFlock->GetAverageNeighborPos();
+
+	FVector2D directionToMove{};
+
+	directionToMove = averagePosition - Agent.GetPosition();
+
+	directionToMove.Normalize();
+
+	output.LinearVelocity = directionToMove;
+
+	return output;
+}
+
+VelocityMatch::VelocityMatch(Flock& assignedFlock)
+{
+	pFlock = &assignedFlock;
+}
+
+SteeringOutput VelocityMatch::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
+{
+	return SteeringOutput();
+}
