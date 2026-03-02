@@ -50,24 +50,24 @@ SteeringOutput Arrive::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	float distance = FVector2D::Distance(Target.Position, Agent.GetPosition());
 	float speed{ 0.0f };
 
-	float debugMaxRadius = Agent.GetMaxArriveDistance();
+	float debugMaxRadius = m_OuterRadius;
 
-	float debugMinRadius = Agent.GetMinArriveDistance();
+	float debugMinRadius = m_TargetRadius;
 
 	FVector debugSphereCenter = FVector{ Agent.GetPosition().X, Agent.GetPosition().Y, Agent.GetActorLocation().Z};
 
 	DrawDebugSphere(Agent.GetWorld(), debugSphereCenter, debugMaxRadius, 12, Agent.GetMaxArriveDebugColor());
 	DrawDebugSphere(Agent.GetWorld(), debugSphereCenter, debugMinRadius, 12, Agent.GetMinArriveDebugColor());
 
-	if (distance > Agent.GetMinArriveDistance())
+	if (distance > m_TargetRadius)
 	{
-		if (distance >= Agent.GetMaxArriveDistance())
+		if (distance >= m_OuterRadius)
 		{
 			speed = Agent.GetCachedMaxSpeed();
 		}
 		else
 		{
-			speed = ((distance - Agent.GetMinArriveDistance()) / (Agent.GetMaxArriveDistance() - Agent.GetMinArriveDistance())) * Agent.GetCachedMaxSpeed();
+			speed = ((distance - m_TargetRadius) / (m_OuterRadius - m_TargetRadius)) * Agent.GetCachedMaxSpeed();
 		}
 
 		Agent.SetMaxLinearSpeed(speed);

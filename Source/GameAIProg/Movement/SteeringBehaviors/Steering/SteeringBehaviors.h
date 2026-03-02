@@ -55,6 +55,15 @@ public:
 	//steering
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
 
+	virtual void SetTargetRadius(float radius) { m_TargetRadius = radius; }
+
+	virtual void SetOuterRadius(float radius) { m_OuterRadius = radius; }
+
+private:
+	
+	float m_TargetRadius{ 200.0f };
+	float m_OuterRadius{ 1000.0f };
+
 };
 
 class Face : public ISteeringBehavior
