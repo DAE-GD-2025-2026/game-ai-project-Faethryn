@@ -20,7 +20,7 @@ Flock::Flock(
  // TODO: initialize the flock and the memory pool
 
 	
-
+	pSeparationBehavior = std::make_unique<Separation>(*this);
 
 
 	for (int i{ 0 } ; i < FlockSize; i++)
@@ -111,6 +111,11 @@ void Flock::RegisterNeighbors(ASteeringAgent* const pAgent)
 	NrOfNeighbors = 0;
 	for (ASteeringAgent* agent : Agents)
 	{
+		if (&pAgent == &agent)
+		{
+			return;
+		}
+
 		float distance{ 0 };
 
 		distance = FVector2D{}.Distance(pAgent->GetPosition(), agent->GetPosition());
@@ -158,75 +163,4 @@ void Flock::SetTarget_Seek(FSteeringParams const& Target)
  // TODO: Implement
 }
 
-Separation::Separation(Flock& assignedFlock)
-{
-	pFlock = &assignedFlock;
-}
 
-SteeringOutput Separation::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
-{
-	SteeringOutput output{};
-	FVector2D averagePosition{};
-
-	averagePosition = pFlock->GetAverageNeighborPos();
-
-	FVector2D directionToMove{};
-
-	directionToMove = Agent.GetPosition() - averagePosition;
-
-	directionToMove.Normalize();
-
-	output.LinearVelocity = directionToMove;
-	
-	return output;
-}
-
-void Separation::SetCohesionDistance(float newDistance)
-{
-	m_CohesionDistance = newDistance;
-}
-
-Cohesion::Cohesion(Flock& assignedFlock)
-{
-	pFlock = &assignedFlock;
-}
-
-void Cohesion::SetCohesionDistance(float newDistance)
-{
-	m_CohesionDistance = newDistance;
-}
-
-SteeringOutput Cohesion::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
-{
-	SteeringOutput output{};
-	FVector2D averagePosition{};
-
-	averagePosition = pFlock->GetAverageNeighborPos();
-
-	FVector2D directionToMove{};
-
-	directionToMove = averagePosition - Agent.GetPosition();
-
-	directionToMove.Normalize();
-
-	output.LinearVelocity = directionToMove;
-
-	return output;
-}
-
-VelocityMatch::VelocityMatch(Flock& assignedFlock)
-{
-	pFlock = &assignedFlock;
-}
-
-SteeringOutput VelocityMatch::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
-{
-	SteeringOutput output{};
-	FVector2D averageVelocity{};
-
-	averageVelocity = pFlock->GetAverageNeighborVelocity();
-
-	output.LinearVelocity = averageVelocity;
-
-	return output;
-}

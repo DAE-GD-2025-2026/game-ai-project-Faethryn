@@ -2,22 +2,49 @@
 #include "Movement/SteeringBehaviors/Steering/SteeringBehaviors.h"
 class Flock;
 
-//COHESION - FLOCKING
-//*******************
-class Cohesion final : public Seek
+class Separation : public ISteeringBehavior
 {
 public:
-	Cohesion(Flock* const pFlock) :pFlock(pFlock) {};
+	virtual ~Separation() override = default;
+	Separation(Flock& assignedFlock);
 
-	//Cohesion Behavior
-	SteeringOutput CalculateSteering(float deltaT, ASteeringAgent& pAgent) override;
+	//Steering
+	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
+
+	void SetCohesionDistance(float newDistance);
 
 private:
-	Flock* pFlock = nullptr;
+	float m_CohesionDistance = { 200.0f };
+
+	Flock* pFlock{ nullptr };
 };
 
-//SEPARATION - FLOCKING
-//*********************
+class Cohesion : public ISteeringBehavior
+{
+public:
+	virtual ~Cohesion() override = default;
 
-//VELOCITY MATCH - FLOCKING
-//************************
+	Cohesion(Flock& assignedFlock);
+
+	//Steering
+	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
+
+	void SetCohesionDistance(float newDistance);
+
+private:
+
+	float m_CohesionDistance = { 200.0f };
+	Flock* pFlock{ nullptr };
+
+};
+
+class VelocityMatch : public ISteeringBehavior
+{
+public:
+	virtual ~VelocityMatch() override = default;
+	VelocityMatch(Flock& assignedFlock);
+
+	//Steering
+	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
+	Flock* pFlock{ nullptr };
+};

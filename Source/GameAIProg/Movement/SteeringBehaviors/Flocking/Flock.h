@@ -69,12 +69,6 @@ private:
 	std::unique_ptr<Separation> pSeparationBehavior{};
 	std::unique_ptr<Cohesion> pCohesionBehavior{};
 	std::unique_ptr<VelocityMatch> pVelMatchBehavior{};
-	std::unique_ptr<Seek> pSeekBehavior{};
-	std::unique_ptr<Wander> pWanderBehavior{};
-	std::unique_ptr<Evade> pEvadeBehavior{};
-	
-	std::unique_ptr<BlendedSteering> pBlendedSteering{};
-	std::unique_ptr<PrioritySteering> pPrioritySteering{};
 
 	// UI and rendering
 	bool DebugRenderSteering{false};
@@ -84,50 +78,5 @@ private:
 	void RenderNeighborhood();
 };
 
-class Separation : public ISteeringBehavior
-{
-public:
-	virtual ~Separation() override = default;
-	Separation(Flock& assignedFlock);
 
-	//Steering
-	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
-
-	void SetCohesionDistance(float newDistance);
-
-private:
-	float m_CohesionDistance = { 200.0f };
-
-	Flock* pFlock{ nullptr };
-};
-
-class Cohesion : public ISteeringBehavior
-{
-public:
-	virtual ~Cohesion() override = default;
-
-	Cohesion(Flock& assignedFlock);
-
-	//Steering
-	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
-
-	void SetCohesionDistance(float newDistance);
-
-private:
-
-	float m_CohesionDistance = { 200.0f };
-	Flock* pFlock{ nullptr };
-
-};
-
-class VelocityMatch : public ISteeringBehavior
-{
-public:
-	virtual ~VelocityMatch() override = default;
-	VelocityMatch(Flock& assignedFlock);
-
-	//Steering
-	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
-	Flock* pFlock{ nullptr };
-};
 
