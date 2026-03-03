@@ -46,5 +46,10 @@ public:
 
 	//Steering
 	virtual SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
+
+private:
+
+	float m_CohesionDistance = { 200.0f };
+
 	Flock* pFlock{ nullptr };
 };

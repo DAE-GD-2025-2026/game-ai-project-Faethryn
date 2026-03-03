@@ -36,7 +36,7 @@ public:
 #else // No space partitioning
 	void RegisterNeighbors(ASteeringAgent* const Agent);
 	int GetNrOfNeighbors() const { return NrOfNeighbors; }
-	const TArray<ASteeringAgent*>& GetNeighbors() const { return Neighbors; }
+	const std::vector<ASteeringAgent*>& GetNeighbors() const { return Neighbors; }
 #endif // USE_SPACE_PARTITIONING
 
 	FVector2D GetAverageNeighborPos() const;
@@ -49,26 +49,26 @@ private:
 	UWorld* pWorld{nullptr};
 	
 	int FlockSize{0};
-	TArray<ASteeringAgent*> Agents{};
+	std::vector<ASteeringAgent*> Agents{};
 #ifdef GAMEAI_USE_SPACE_PARTITIONING
 	//std::unique_ptr<CellSpace> pPartitionedSpace{};
 	//int NrOfCellsX{ 10 };
 	//TArray<FVector2D> OldPositions{};
 #else // No space partitioning
-	TArray<ASteeringAgent*> Neighbors{};
+	std::vector<ASteeringAgent*> Neighbors{};
 #endif // USE_SPACE_PARTITIONING
 	
-	float NeighborhoodRadius{200.f};
+	float NeighborhoodRadius{500.f};
 	int NrOfNeighbors{0};
 
 	ASteeringAgent* pAgentToEvade{nullptr};
 	
 	//Steering Behaviors
 
-	std::unique_ptr<BlendedSteering> pBoidBehaviour{};
-	std::unique_ptr<Separation> pSeparationBehavior{};
-	std::unique_ptr<Cohesion> pCohesionBehavior{};
-	std::unique_ptr<VelocityMatch> pVelMatchBehavior{};
+	BlendedSteering* pBoidBehaviour{};
+	Separation* pSeparationBehavior{};
+	Cohesion* pCohesionBehavior{};
+	VelocityMatch* pVelMatchBehavior{};
 
 	// UI and rendering
 	bool DebugRenderSteering{false};

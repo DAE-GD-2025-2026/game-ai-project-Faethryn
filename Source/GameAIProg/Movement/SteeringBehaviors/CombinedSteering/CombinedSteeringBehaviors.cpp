@@ -28,7 +28,8 @@ SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& 
 		output.LinearVelocity *= (behaviour.Weight / totalWeight);
 		output.AngularVelocity *= (behaviour.Weight / totalWeight);
 
-		BlendedSteering = BlendedSteering + (output);
+		BlendedSteering.LinearVelocity += output.LinearVelocity;
+		BlendedSteering.AngularVelocity += output.AngularVelocity;
 	}
 	// TODO: Add debug drawing
 

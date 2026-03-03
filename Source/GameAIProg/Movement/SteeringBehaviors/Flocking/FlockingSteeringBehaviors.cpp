@@ -13,14 +13,20 @@ SteeringOutput Separation::CalculateSteering(float DeltaT, ASteeringAgent& Agent
 {
 	SteeringOutput output{};
 	FVector2D averagePosition{};
-
-	averagePosition = pFlock->GetAverageNeighborPos();
+	//pFlock->RegisterNeighbors(&Agent);
 
 	FVector2D directionToMove{};
 
-	directionToMove = Agent.GetPosition() - averagePosition;
+	for (int i{ 0 }; i < pFlock->GetNrOfNeighbors(); i++)
+	{
+		float distance = FVector2D{}.Distance(Agent.GetPosition(), pFlock->GetNeighbors()[i]->GetPosition());
 
-	directionToMove.Normalize();
+		float weight = m_CohesionDistance / distance;
+
+		FVector2D tempVector = (Agent.GetPosition() - pFlock->GetNeighbors()[i]->GetPosition());
+
+		directionToMove += (tempVector * weight);
+	}
 
 	output.LinearVelocity = directionToMove;
 
@@ -46,14 +52,14 @@ SteeringOutput Cohesion::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
 	SteeringOutput output{};
 	FVector2D averagePosition{};
+	//pFlock->RegisterNeighbors(&Agent);
+
 
 	averagePosition = pFlock->GetAverageNeighborPos();
 
 	FVector2D directionToMove{};
 
 	directionToMove = averagePosition - Agent.GetPosition();
-
-	directionToMove.Normalize();
 
 	output.LinearVelocity = directionToMove;
 
@@ -69,7 +75,7 @@ SteeringOutput VelocityMatch::CalculateSteering(float DeltaT, ASteeringAgent& Ag
 {
 	SteeringOutput output{};
 	FVector2D averageVelocity{};
-
+	//pFlock->RegisterNeighbors(&Agent);
 	averageVelocity = pFlock->GetAverageNeighborVelocity();
 
 	output.LinearVelocity = averageVelocity;
