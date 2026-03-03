@@ -29,6 +29,8 @@ public:
 	// returns a reference to the weighted behaviors, can be used to adjust weighting. Is not intended to alter the behaviors themselves.
 	std::vector<WeightedBehavior>& GetWeightedBehaviorsRef() { return WeightedBehaviors; }
 
+	void SetTarget(const FTargetData& NewTarget) override;
+
 private:
 	std::vector<WeightedBehavior> WeightedBehaviors = {};
 
@@ -46,6 +48,8 @@ public:
 
 	void AddBehaviour(ISteeringBehavior* const pBehavior) { m_PriorityBehaviors.push_back(pBehavior); }
 	SteeringOutput CalculateSteering(float DeltaT, ASteeringAgent& Agent) override;
+
+	void SetTarget(const FTargetData& NewTarget) override;
 
 private:
 	std::vector<ISteeringBehavior*> m_PriorityBehaviors = {};

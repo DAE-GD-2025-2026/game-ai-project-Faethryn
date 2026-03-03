@@ -65,10 +65,13 @@ private:
 	
 	//Steering Behaviors
 
-	BlendedSteering* pBoidBehaviour{};
-	Separation* pSeparationBehavior{};
-	Cohesion* pCohesionBehavior{};
-	VelocityMatch* pVelMatchBehavior{};
+	BlendedSteering* pBoidBehaviour{ nullptr };
+	PrioritySteering* pEvadeBoidBehavior{ nullptr };
+	Separation* pSeparationBehavior{ nullptr };
+	Cohesion* pCohesionBehavior{ nullptr };
+	Evade* pEvadeBehavior{ nullptr };
+
+	VelocityMatch* pVelMatchBehavior{nullptr};
 
 	// UI and rendering
 	bool DebugRenderSteering{false};
@@ -76,6 +79,8 @@ private:
 	bool DebugRenderPartitions{true};
 
 	void RenderNeighborhood();
+	void UpdateEvadeTarget();
+
 };
 
 

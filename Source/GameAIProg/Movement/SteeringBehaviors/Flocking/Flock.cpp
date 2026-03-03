@@ -23,9 +23,13 @@ Flock::Flock(
 	pSeparationBehavior = new Separation(*this);
 	pCohesionBehavior = new Cohesion(*this);
 	pVelMatchBehavior = new VelocityMatch(*this);
+	pEvadeBehavior = new Evade();
+
+	pEvadeBehavior->SetMaxAvoidanceDistance(1000);
 
 	pBoidBehaviour = new BlendedSteering(std::vector<BlendedSteering::WeightedBehavior>{BlendedSteering::WeightedBehavior(pSeparationBehavior, 0.2f),
 		BlendedSteering::WeightedBehavior(pCohesionBehavior, 0.2f), BlendedSteering::WeightedBehavior(pVelMatchBehavior, 0.2f), BlendedSteering::WeightedBehavior(new Seek(), 0.2f)});
+	pEvadeBoidBehavior = new PrioritySteering(std::vector<ISteeringBehavior*>{pEvadeBehavior, pBoidBehaviour});
 
 
 	for (int i{ 0 } ; i < Agents.capacity(); i++)
@@ -39,7 +43,7 @@ Flock::Flock(
 		}
 		Agents[i]->SetActorTickEnabled(false);
 
-		Agents[i]->SetSteeringBehavior(pBoidBehaviour);
+		Agents[i]->SetSteeringBehavior(pEvadeBoidBehavior);
 	}
 }
 
@@ -68,11 +72,27 @@ void Flock::Tick(float DeltaTime)
   // TODO: update the agent (-> the steeringbehaviors use the neighbors in the memory pool)
   // TODO: trim the agent to the world
 
+	UpdateEvadeTarget();
+
 	for (ASteeringAgent* agent : Agents)
 	{
 		RegisterNeighbors(agent);
 		agent->Tick(DeltaTime);
 	}
+
+}
+
+void Flock::UpdateEvadeTarget()
+{
+
+	FTargetData Target;
+	Target.Position = pAgentToEvade->GetPosition();
+	Target.Orientation = pAgentToEvade->GetRotation();
+	Target.LinearVelocity = pAgentToEvade->GetLinearVelocity();
+	Target.AngularVelocity = pAgentToEvade->GetAngularVelocity();
+
+
+	pEvadeBehavior->SetTarget(Target);
 }
 
 void Flock::RenderDebug()

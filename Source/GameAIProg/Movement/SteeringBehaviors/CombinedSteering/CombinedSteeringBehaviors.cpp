@@ -18,7 +18,7 @@ SteeringOutput BlendedSteering::CalculateSteering(float DeltaT, ASteeringAgent& 
 	{
 		totalWeight += behaviour.Weight;
 
-		behaviour.pBehavior->SetTarget(Target);
+		//behaviour.pBehavior->SetTarget(Target);
 	}
 
 	for (WeightedBehavior behaviour : WeightedBehaviors)
@@ -52,6 +52,14 @@ float* BlendedSteering::GetWeight(ISteeringBehavior* const SteeringBehavior)
 	return nullptr;
 }
 
+void BlendedSteering::SetTarget(const FTargetData& NewTarget)
+{
+	for (WeightedBehavior behaviour : WeightedBehaviors)
+	{
+		behaviour.pBehavior->SetTarget(Target);
+	}
+}
+
 //*****************
 //PRIORITY STEERING
 SteeringOutput PrioritySteering::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
@@ -60,7 +68,7 @@ SteeringOutput PrioritySteering::CalculateSteering(float DeltaT, ASteeringAgent&
 
 	for (ISteeringBehavior* const pBehavior : m_PriorityBehaviors)
 	{
-		pBehavior->SetTarget(Target);
+		//pBehavior->SetTarget(Target);
 
 		Steering = pBehavior->CalculateSteering(DeltaT, Agent);
 
@@ -70,4 +78,12 @@ SteeringOutput PrioritySteering::CalculateSteering(float DeltaT, ASteeringAgent&
 
 	//If non of the behavior return a valid output, last behavior is returned
 	return Steering;
+}
+
+void PrioritySteering::SetTarget(const FTargetData& NewTarget)
+{
+	for (ISteeringBehavior* const pBehavior : m_PriorityBehaviors)
+	{
+		pBehavior->SetTarget(Target);
+	}
 }
