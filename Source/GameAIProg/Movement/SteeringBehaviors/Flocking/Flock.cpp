@@ -24,11 +24,12 @@ Flock::Flock(
 	pCohesionBehavior = new Cohesion(*this);
 	pVelMatchBehavior = new VelocityMatch(*this);
 	pEvadeBehavior = new Evade();
+	pSeekBehavior = new Seek();
 
 	pEvadeBehavior->SetMaxAvoidanceDistance(1000);
 
 	pBoidBehaviour = new BlendedSteering(std::vector<BlendedSteering::WeightedBehavior>{BlendedSteering::WeightedBehavior(pSeparationBehavior, 0.2f),
-		BlendedSteering::WeightedBehavior(pCohesionBehavior, 0.2f), BlendedSteering::WeightedBehavior(pVelMatchBehavior, 0.2f), BlendedSteering::WeightedBehavior(new Seek(), 0.2f)});
+		BlendedSteering::WeightedBehavior(pCohesionBehavior, 0.2f), BlendedSteering::WeightedBehavior(pVelMatchBehavior, 0.2f), BlendedSteering::WeightedBehavior(pSeekBehavior, 0.2f)});
 	pEvadeBoidBehavior = new PrioritySteering(std::vector<ISteeringBehavior*>{pEvadeBehavior, pBoidBehaviour});
 
 
@@ -61,6 +62,7 @@ Flock::~Flock()
 	delete pSeparationBehavior;
 	delete pCohesionBehavior;
 	delete pVelMatchBehavior;
+	delete pSeekBehavior;
 	delete pBoidBehaviour;
 }
 
@@ -236,7 +238,7 @@ FVector2D Flock::GetAverageNeighborVelocity() const
 void Flock::SetTarget_Seek(FSteeringParams const& Target)
 {
  // TODO: Implement
-	pBoidBehaviour->SetTarget(Target);
+	pSeekBehavior->SetTarget(Target);
 }
 
 

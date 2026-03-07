@@ -70,6 +70,7 @@ private:
 	Separation* pSeparationBehavior{ nullptr };
 	Cohesion* pCohesionBehavior{ nullptr };
 	Evade* pEvadeBehavior{ nullptr };
+	Seek* pSeekBehavior{ nullptr };
 
 	VelocityMatch* pVelMatchBehavior{nullptr};
 

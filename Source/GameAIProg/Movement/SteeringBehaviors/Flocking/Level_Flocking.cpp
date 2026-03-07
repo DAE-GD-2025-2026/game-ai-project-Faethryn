@@ -43,6 +43,8 @@ void ALevel_Flocking::Tick(float DeltaTime)
 	pFlock->Tick(DeltaTime);
 	pFlock->RenderDebug();
 	if (bUseMouseTarget)
+	{
 		pFlock->SetTarget_Seek(MouseTarget);
+	}
 }
 

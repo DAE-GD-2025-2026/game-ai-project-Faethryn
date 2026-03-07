@@ -16,6 +16,9 @@ SteeringOutput Seek::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 	FVector targetDebugLineEnd{ Agent.GetPosition().X + Agent.GetLinearVelocity().X, Agent.GetPosition().Y + Agent.GetLinearVelocity().Y, Agent.GetActorLocation().Z};
 	DrawDebugLine(Agent.GetWorld(), targetDebugLineStart, targetDebugLineEnd, Agent.GetDirectionLineDebugColor());
 
+	FVector debugSphereCenter = FVector{ Target.Position.X, Target.Position.Y, Agent.GetActorLocation().Z };
+
+	DrawDebugSphere(Agent.GetWorld(), debugSphereCenter, 10.0f, 12, Agent.GetDirectionLineDebugColor());
 
 	float distanceThisFrame = Agent.GetMaxLinearSpeed();
 
