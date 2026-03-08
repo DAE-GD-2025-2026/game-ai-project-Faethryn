@@ -36,10 +36,7 @@ SteeringOutput Separation::CalculateSteering(float DeltaT, ASteeringAgent& Agent
 
 	output.LinearVelocity = directionToMove;
 
-	if (isnan(output.LinearVelocity.X) || isnan(output.LinearVelocity.Y) )
-	{
-		output.LinearVelocity = FVector2D{}.Zero();
-	}
+	
 	return output;
 }
 
