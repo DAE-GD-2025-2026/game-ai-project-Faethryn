@@ -15,8 +15,7 @@ Flock::Flock(
 	, pAgentToEvade{pAgentToEvade}
 {
 	Agents.resize(FlockSize);
-
-	Neighbors.resize(FlockSize);
+	
  // TODO: initialize the flock and the memory pool
 
 	
@@ -46,6 +45,27 @@ Flock::Flock(
 
 		Agents[i]->SetSteeringBehavior(pEvadeBoidBehavior);
 	}
+	
+#ifdef  GAMEAI_USE_SPACE_PARTITIONING
+	
+	Neighbors.resize(FlockSize);
+	
+	
+	pPartitionedSpace = std::make_unique<CellSpace>(pWorld,Neighbors, m_cellWidth * static_cast<float>(NrOfCellsX),
+		m_cellHeight * static_cast<float>(NrOfCellsX), NrOfCellsX, NrOfCellsX, FlockSize);
+	
+	OldPositions.resize(FlockSize);
+	
+	for (int i{0}; i < FlockSize; i++)
+	{
+		OldPositions[i] = Agents[i]->GetPosition();
+		pPartitionedSpace->AddAgent(Agents[i]);
+	}
+#else
+	
+	Neighbors.resize(FlockSize);
+	
+#endif
 }
 
 Flock::~Flock()
@@ -76,12 +96,21 @@ void Flock::Tick(float DeltaTime)
 
 	UpdateEvadeTarget();
 
-	for (ASteeringAgent* agent : Agents)
+	for (int i {0}; i < FlockSize; i++)
 	{
-		RegisterNeighbors(agent);
-		agent->Tick(DeltaTime);
+#ifdef GAMEAI_USE_SPACE_PARTITIONING
+		pPartitionedSpace->UpdateAgentCell(Agents[i], OldPositions[i]);
+		RegisterNeighbors(Agents[i], NeighborhoodRadius);
+		OldPositions[i] = Agents[i]->GetPosition();
+		Agents[i]->Tick(DeltaTime);
+		
+#else
+		RegisterNeighbors(Agents[i]);
+		Agents[i]->Tick(DeltaTime);
+		
+#endif
+		
 	}
-
 }
 
 void Flock::UpdateEvadeTarget()
@@ -194,6 +223,23 @@ void Flock::RegisterNeighbors(ASteeringAgent* const pAgent)
 		}
 	}
 }
+
+
+#else
+void Flock::RegisterNeighbors(ASteeringAgent* pAgent, float radius)
+{
+	NrOfNeighbors = 0;
+	for (ASteeringAgent* agent : Agents)
+	{
+		if (pAgent == agent)
+		{
+			return;
+		}
+
+		pPartitionedSpace->RegisterNeighbors(pAgent, radius);
+	}
+}
+
 #endif
 
 FVector2D Flock::GetAverageNeighborPos() const

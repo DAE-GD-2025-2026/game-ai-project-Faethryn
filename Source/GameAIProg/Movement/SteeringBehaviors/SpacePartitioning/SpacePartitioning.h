@@ -23,8 +23,8 @@ struct Cell final
 	std::vector<FVector2D> GetRectPoints() const;
 	
 	// all the agents currently in this cell
-	std::list<ASteeringAgent*> Agents;
-	FRect BoundingBox;
+	std::list<ASteeringAgent*> Agents{};
+	FRect BoundingBox{};
 };
 
 // --- Partitioned Space ---
@@ -32,13 +32,13 @@ struct Cell final
 class CellSpace final
 {
 public:
-	CellSpace(UWorld* pWorld, float Width, float Height, int Rows, int Cols, int MaxEntities);
+	CellSpace(UWorld* pWorld,std::vector<ASteeringAgent*>& neighBourCollection, float Width, float Height, int Rows, int Cols, int MaxEntities);
 
-	void AddAgent(ASteeringAgent& Agent);
-	void UpdateAgentCell(ASteeringAgent& Agent, const FVector2D& OldPos);
+	void AddAgent(ASteeringAgent* Agent);
+	void UpdateAgentCell(ASteeringAgent* Agent, const FVector2D& OldPos);
 
-	void RegisterNeighbors(ASteeringAgent& Agent, float QueryRadius);
-	const TArray<ASteeringAgent*>& GetNeighbors() const { return Neighbors; }
+	void RegisterNeighbors(ASteeringAgent* Agent, float QueryRadius);
+	const std::vector<ASteeringAgent*>&  GetNeighbors() const { return Neighbors; }
 	int GetNrOfNeighbors() const { return NrOfNeighbors; }
 
 	//empties the cells of entities
@@ -50,7 +50,7 @@ private:
 	UWorld* pWorld{};
 	
 	// Cells and properties
-	std::vector<Cell> Cells;
+	std::vector<Cell*> Cells;
 	FVector2D CellOrigin{};
 	
 	float SpaceWidth;
@@ -63,10 +63,11 @@ private:
 	float CellHeight;
 
 	// Members to avoid memory allocation on every frame
-	TArray<ASteeringAgent*> Neighbors;
-	int NrOfNeighbors;
+	std::vector<ASteeringAgent*>&  Neighbors;
+	int NrOfNeighbors{0};
 
 	// Helper functions
 	int PositionToIndex(FVector2D const & Pos) const;
+	
 	bool DoRectsOverlap(FRect const& RectA, FRect const& RectB);
 };
