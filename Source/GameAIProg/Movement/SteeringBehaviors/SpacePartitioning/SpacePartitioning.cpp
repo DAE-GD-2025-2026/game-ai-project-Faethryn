@@ -103,8 +103,11 @@ void CellSpace::RegisterNeighbors(ASteeringAgent* Agent, float QueryRadius)
 		{
 			for (auto agent : cell->Agents)
 			{
-				Neighbors[NrOfNeighbors] = agent;
-				NrOfNeighbors += 1;
+				if (agent != Agent)
+				{
+					Neighbors[NrOfNeighbors] = agent;
+					NrOfNeighbors += 1;
+				}
 			}
 		}
 	}
