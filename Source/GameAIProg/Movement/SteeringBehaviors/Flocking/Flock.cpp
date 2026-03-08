@@ -237,6 +237,7 @@ void Flock::RegisterNeighbors(ASteeringAgent* pAgent, float radius)
 		}
 
 		pPartitionedSpace->RegisterNeighbors(pAgent, radius);
+		NrOfNeighbors = pPartitionedSpace->GetNrOfNeighbors();
 	}
 }
 

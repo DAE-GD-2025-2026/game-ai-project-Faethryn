@@ -12,24 +12,31 @@ Separation::Separation(Flock& assignedFlock)
 SteeringOutput Separation::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 {
 	SteeringOutput output{};
-	FVector2D averagePosition{};
+	FVector2D averagePosition{0,0};
 	//pFlock->RegisterNeighbors(&Agent);
 
-	FVector2D directionToMove{};
+	FVector2D directionToMove{0,0};
 
 	for (int i{ 0 }; i < pFlock->GetNrOfNeighbors(); i++)
 	{
-		float distance = FVector2D{}.Distance(Agent.GetPosition(), pFlock->GetNeighbors()[i]->GetPosition());
+		if (pFlock->GetNeighbors()[i] != nullptr)
+		{
+			float distance = FVector2D{}.Distance(Agent.GetPosition(), pFlock->GetNeighbors()[i]->GetPosition());
 
-		float weight = m_CohesionDistance / distance;
+			float weight = m_CohesionDistance / distance;
 
-		FVector2D tempVector = (Agent.GetPosition() - pFlock->GetNeighbors()[i]->GetPosition());
+			FVector2D tempVector = (Agent.GetPosition() - pFlock->GetNeighbors()[i]->GetPosition());
 
-		directionToMove += (tempVector * weight);
+			directionToMove += (tempVector * weight);
+		}
 	}
 
 	output.LinearVelocity = directionToMove;
 
+	if (isnan(output.LinearVelocity.X) || isnan(output.LinearVelocity.Y) )
+	{
+		output.LinearVelocity = FVector2D{}.Zero();
+	}
 	return output;
 }
 
