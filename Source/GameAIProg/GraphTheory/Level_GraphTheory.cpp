@@ -5,6 +5,7 @@
 
 #include "Algorithms/EulerianPath.h"
 #include "Shared/GameAISpectator.h"
+#include "Slate/SGameLayerManager.h"
 
 using namespace GameAI;
 
@@ -42,6 +43,17 @@ void ALevel_GraphTheory::BeginPlay()
 	}
 	
 	// TODO Make the graph and a couple connected nodes here...
+	Graph.AddNode(std::make_unique<Node>(FVector2D{50, 50}));
+	
+	Graph.AddNode(std::make_unique<Node>(FVector2D{500, 500}));
+	Graph.AddNode(std::make_unique<Node>(FVector2D{-500, 500}));
+	Graph.AddNode(std::make_unique<Node>(FVector2D{500, -500}));
+	Graph.AddConnection(Graph.GetActiveNodes()[0]->GetId(), Graph.GetActiveNodes()[1]->GetId());
+	Graph.AddConnection(Graph.GetActiveNodes()[0]->GetId(), Graph.GetActiveNodes()[1]->GetId());
+	Graph.AddConnection(Graph.GetActiveNodes()[0]->GetId(), Graph.GetActiveNodes()[1]->GetId());
+	Graph.AddConnection(Graph.GetActiveNodes()[2]->GetId(), Graph.GetActiveNodes()[1]->GetId());
+	Graph.AddConnection(Graph.GetActiveNodes()[3]->GetId(), Graph.GetActiveNodes()[1]->GetId());
+	
 	
 	// Spawn the Agent
 	Agent = GetWorld()->SpawnActor<ASteeringAgent>(SteeringAgentClass, 
@@ -102,6 +114,18 @@ void ALevel_GraphTheory::Tick(float DeltaTime)
 	// TODO Check if the graph has updated
 	// TODO if so, run the EulerianPath algorithm
 	// TODO if a path is found, have the agent follow it
+	
+	if (PlayerGraphEditor->HasGraphUpdated())
+	{
+		std::vector<Node*> path;
+		
+		EulerianPath eulerianPath{&Graph};
+		
+		Eulerianity isEulerian = eulerianPath.IsEulerian();
+		path = eulerianPath.FindPath(isEulerian);
+		
+		UpdateAgentPath(path);
+	}
 }
 
 void ALevel_GraphTheory::UpdateAgentPath(std::vector<Node*> const& Trail)
@@ -110,6 +134,10 @@ void ALevel_GraphTheory::UpdateAgentPath(std::vector<Node*> const& Trail)
 	
 	// TODO convert Node vector to positions vector
 
+	for (Node* node : Trail)
+	{
+		path.push_back(node->GetPosition());
+	}
 	PathFollow.SetPath(path);
 	if (path.size() > 0)
 	{
