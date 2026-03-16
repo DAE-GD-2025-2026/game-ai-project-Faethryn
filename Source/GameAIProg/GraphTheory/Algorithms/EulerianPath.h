@@ -100,9 +100,6 @@ namespace GameAI
 		std::stack<int> nodeStack;
 		int CurrentIndex{ 0 };
 		
-		
-		if (eulerianity == Eulerianity::semiEulerian)
-		{
 			if (Nodes.size() == 2)
 			{
 				CurrentIndex = 0;
@@ -114,8 +111,8 @@ namespace GameAI
 			
 				for (int j{0}; j < m_pGraph->GetConnections().size(); j++)
 				{
-					if (Nodes[j]->GetId() == m_pGraph->GetConnections()[j]->GetFromId() ||
-						Nodes[j]->GetId() == m_pGraph->GetConnections()[j]->GetToId())
+					if (Nodes[i]->GetId() == m_pGraph->GetConnections()[j]->GetFromId() ||
+						Nodes[i]->GetId() == m_pGraph->GetConnections()[j]->GetToId())
 					{
 						numberOfConnections++;
 					}
@@ -127,16 +124,17 @@ namespace GameAI
 					break;
 				}
 			}
-		}
 		
 		bool validPathFound = false;
 
 		currentNodeId = Nodes[CurrentIndex]->GetId();
 		
+		nodeStack.push(currentNodeId);
+		
 		while (validPathFound == false)
 		{
-			nodeStack.push(currentNodeId);
-			currentNodeId = nodeStack.top();
+			//nodeStack.push(currentNodeId);
+			//currentNodeId = nodeStack.top();
 
 			int neighbourCount {0};
 			for (int i = 0; i < graphCopy.GetConnections().size(); ++i)
@@ -144,25 +142,29 @@ namespace GameAI
 				if (graphCopy.GetConnections()[i]->GetFromId() == currentNodeId)
 				{
 					neighbourCount++;
-					graphCopy.RemoveConnection(graphCopy.GetConnections()[i].get());
 					currentNodeId = graphCopy.GetConnections()[i]->GetToId();
+					graphCopy.RemoveConnection(graphCopy.GetConnections()[i].get());
+					nodeStack.push(currentNodeId);
 					break;
 				}
 			}
 			
 			if (neighbourCount == 0)
 			{
-				nodeStack.pop();
 				if (nodeStack.size() == 0)
 				{
 					validPathFound = true;
 				}
+				else
+				{
+					
+					Path.push_back( m_pGraph->GetNode(nodeStack.top()).get());
+					nodeStack.pop();
+				}
 			}
-			
-			
 		}
 		
-		Path.push_back(m_pGraph->GetNode(currentNodeId).get());
+		//Path.push_back(m_pGraph->GetNode(currentNodeId).get());
 		std::reverse(Path.begin(), Path.end());
 		return Path;
 	}
