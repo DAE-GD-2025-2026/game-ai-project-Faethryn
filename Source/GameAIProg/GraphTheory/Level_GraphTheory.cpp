@@ -144,6 +144,7 @@ void ALevel_GraphTheory::UpdateAgentPath(std::vector<Node*> const& Trail)
 	if (path.size() > 0)
 	{
 		Agent->SetPosition(path[0]);
+		PathFollow.SetPath(path);
 	}
 }
 
