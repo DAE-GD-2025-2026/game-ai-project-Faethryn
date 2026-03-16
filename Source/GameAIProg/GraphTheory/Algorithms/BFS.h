@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <map>
 #include <vector>
 
 namespace GameAI
@@ -15,5 +16,7 @@ namespace GameAI
 
 	private:
 		Graph* pGraph;
+		
+		std::vector<Node*> reconstructPath(std::map<Node*, Node*>& parent,Node* const pStartNode, Node* const pDestinationNode) const;
 	};
 }
