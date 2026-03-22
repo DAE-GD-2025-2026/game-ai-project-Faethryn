@@ -19,54 +19,52 @@ std::vector<Node*> BFS::FindPath(Node* const pStartNode, Node* const pDestinatio
 	
 	std::queue<Node*> queue{};
 	
+	std::vector<Node*> Visited{};
+	//std::vector<Node*> Next{};
+	
+	std::map<Node*, Node*> parents{};
+	
+	parents[pStartNode] = nullptr;
+	Visited.push_back(pStartNode);
 	queue.push(pStartNode);
-	
-	std::vector<Node*> Closed{};
-	
-	//visited.push_back(pStartNode);
-	
-	std::map<Node*, Node*> parent{};
-	
-	parent[pStartNode] = nullptr;
 	
 	while (!queue.empty())
 	{
-		Node* currentNode = queue.front();
-		queue.pop_front();
-		Closed.push_back(currentNode);
+		Node* pCurrentNode = queue.front();
+		queue.pop();
 		
-		if (currentNode == pDestinationNode)
+		if (pCurrentNode == pDestinationNode)
 		{
-			return reconstructPath(parent, pStartNode, pDestinationNode);
+			return reconstructPath(parents, pStartNode, pDestinationNode);
 		}
 		
-		std::vector<Node*> validNeighbours{};
-		
-		for (int i = 0; i < pGraph->GetConnections().size(); i++)
+		for (int i{0}; i < pGraph->GetConnections().size(); ++i)
 		{
-			if (pGraph->GetConnections()[i]->GetFromId() == currentNode->GetId())
+			if (pGraph->GetConnections()[i]->GetFromId() == pCurrentNode->GetId())
 			{
-				bool isAlreadyVisited = false;
-				for (int j = 0; j < Closed.size(); j++)
+				int currentNeighbourID = pGraph->GetConnections()[i]->GetToId();
+				
+				Node* currentNeighbourNode = pGraph->GetNode(currentNeighbourID).get();
+				
+				bool isVisited = false;
+				for (int j{0}; j < Visited.size(); ++j)
 				{
-					if (pGraph->GetNode(pGraph->GetConnections()[i]->GetToId()).get() == Closed[j])
+					if (Visited[j] == currentNeighbourNode)
 					{
-						isAlreadyVisited = true;
+						isVisited = true;
 					}
 				}
 				
-				if (!isAlreadyVisited)
+				if (!isVisited)
 				{
-					validNeighbours.push_back(currentNode);
+					Visited.push_back(currentNeighbourNode);
+					parents[currentNeighbourNode] = pCurrentNode;
+					queue.push(currentNeighbourNode);
 				}
 			}
 		}
-		
-		for (int i = 0; i < validNeighbours.size(); i++)
-		{
-			queue.push(validNeighbours[i]);
-		}
 	}
+	
 	return path;
 }
 
