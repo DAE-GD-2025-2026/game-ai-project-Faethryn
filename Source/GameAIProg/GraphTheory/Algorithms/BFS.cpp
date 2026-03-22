@@ -15,57 +15,58 @@ BFS::BFS(Graph* const pGraph)
 // TODO Breath First Search Algorithm searches for a path from the startNode to the destinationNode
 std::vector<Node*> BFS::FindPath(Node* const pStartNode, Node* const pDestinationNode) const
 {
-	std::vector<Node*> path;
+	std::vector<Node*> path{};
 	
 	std::queue<Node*> queue{};
 	
 	queue.push(pStartNode);
 	
-	std::vector<Node*> visited{};
+	std::vector<Node*> Closed{};
 	
-	visited.push_back(pStartNode);
+	//visited.push_back(pStartNode);
 	
 	std::map<Node*, Node*> parent{};
 	
 	parent[pStartNode] = nullptr;
 	
-	while(!queue.empty())
+	while (!queue.empty())
 	{
-		Node* pCurrentNode = queue.front();
-		queue.pop();
-		//visited.push_back(pCurrentNode);
+		Node* currentNode = queue.front();
+		queue.pop_front();
+		Closed.push_back(currentNode);
 		
-		if (pCurrentNode == pDestinationNode)
+		if (currentNode == pDestinationNode)
 		{
-			//path.push_back(pCurrentNode);
 			return reconstructPath(parent, pStartNode, pDestinationNode);
 		}
-		else
+		
+		std::vector<Node*> validNeighbours{};
+		
+		for (int i = 0; i < pGraph->GetConnections().size(); i++)
 		{
-			for (int i{0}; i < pGraph->GetConnections().size(); ++i)
+			if (pGraph->GetConnections()[i]->GetFromId() == currentNode->GetId())
 			{
-				if (pGraph->GetConnections()[i]->GetFromId() == pCurrentNode->GetId())
+				bool isAlreadyVisited = false;
+				for (int j = 0; j < Closed.size(); j++)
 				{
-					bool isInVisited = false;
-					for (int j{0}; j < visited.size(); ++j)
+					if (pGraph->GetNode(pGraph->GetConnections()[i]->GetToId()).get() == Closed[j])
 					{
-						if (visited[j] == pCurrentNode)
-						{
-							isInVisited = true;
-						}
+						isAlreadyVisited = true;
 					}
-					
-					if (!isInVisited)
-					{
-						queue.push(pGraph->GetNode(pGraph->GetConnections()[i]->GetToId()).get());
-						visited.push_back(queue.front());
-						parent[queue.front()] = pCurrentNode;
-					}
+				}
+				
+				if (!isAlreadyVisited)
+				{
+					validNeighbours.push_back(currentNode);
 				}
 			}
 		}
+		
+		for (int i = 0; i < validNeighbours.size(); i++)
+		{
+			queue.push(validNeighbours[i]);
+		}
 	}
-	
 	return path;
 }
 
@@ -80,6 +81,7 @@ std::vector<Node*> BFS::reconstructPath(std::map<Node*, Node*>& parent,
 	while (parent[pCurrentNode] != nullptr)
 	{
 		path.push_back(parent[pCurrentNode]);
+		pCurrentNode = parent[pCurrentNode];
 	}
 	std::reverse(path.begin(), path.end());
 	
