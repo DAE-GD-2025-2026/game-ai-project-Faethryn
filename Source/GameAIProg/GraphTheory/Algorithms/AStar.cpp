@@ -39,6 +39,7 @@ std::vector<Node*>AStar::FindPath(Node* const pStartNode, Node* const pGoalNode)
 		
 		if (currentNodeID == pGoalNode->GetId())
 		{
+			closed_list.push_back(pGraph->GetNode(currentNodeID).get());
 			path = closed_list;
 			
 			return path;
