@@ -157,7 +157,6 @@ namespace GameAI
 				}
 				else
 				{
-					
 					Path.push_back( m_pGraph->GetNode(nodeStack.top()).get());
 					nodeStack.pop();
 				}

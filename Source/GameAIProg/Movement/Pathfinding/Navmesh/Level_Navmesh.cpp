@@ -98,10 +98,24 @@ void ALevel_Navmesh::Tick(float DeltaTime)
 	}
 	
 	// Todo: Draw the portals travelled through with SSFA
-	// if (bDrawPortals)
-	// {
-	// 	
-	// }
+	 if (bDrawPortals)
+	 {
+	 	for (int i{0}; i < NavigationGraph->GetNodes().size(); i++)
+	 	{
+	 		DrawDebugSphere(GetWorld(),FVector(NavigationGraph->GetNodes()[i]->GetPosition().X,
+	 			5.0f, NavigationGraph->GetNodes()[i]->GetPosition().Y)
+	 			,10.f, 8, FColor::Red );
+	 	}
+	 	
+	 	for (int i{0}; i < NavigationGraph->GetConnections().size(); i++)
+	 	{
+	 		FVector2D position1 = NavigationGraph->GetNode(NavigationGraph->GetConnections()[i]->GetFromId())->GetPosition();
+	 		FVector2D position2 = NavigationGraph->GetNode(NavigationGraph->GetConnections()[i]->GetToId())->GetPosition();
+	 		
+	 		DrawDebugLine(GetWorld(), FVector{position1.X, 5.0f, position1.Y},
+	 			FVector{position2.X, 5.0f, position2.Y}, FColor::Green);
+	 	}
+	 }
 	
 	UpdateImGui();
 }
