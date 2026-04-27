@@ -77,6 +77,9 @@ public:
 		int currentRightLegIndex = 1;
 		int currentLeftLegIndex = 1;
 		
+		FVector2D rightLeg = Portals[currentRightLegIndex].P1 - currentApex;
+		FVector2D leftLeg = Portals[currentLeftLegIndex].P2 - currentApex;
+		
 		int currentPortalIndex = 2;
 		
 		bool hasReachedEnd = false;
@@ -84,42 +87,72 @@ public:
 		{
 			//Right check
 			
-			FVector2D rightLeg = Portals[currentRightLegIndex].P1 - currentApex;
 			FVector2D newRightLeg = Portals[currentPortalIndex].P1 - currentApex;
 			
 			float rightCross = FVector2D::CrossProduct(rightLeg, newRightLeg);
 			
 			if (rightCross > 0)
 			{
-				FVector2D tempLeftLeg = Portals[currentLeftLegIndex].P2 - currentApex;
-				
-				float newRightLeftCross = FVector2D::CrossProduct(tempLeftLeg, newRightLeg);
+				float newRightLeftCross = FVector2D::CrossProduct(leftLeg, newRightLeg);
 				if (newRightLeftCross > 0)
 				{
 					//we crossed the left leg
+					currentApex = currentApex + leftLeg;
+					currentApexIndex = currentLeftLegIndex;
+					currentPortalIndex = currentRightLegIndex + 1;
+					currentLeftLegIndex = currentPortalIndex;
+					currentRightLegIndex = currentPortalIndex;
 					
+					Path.push_back(currentApex);
 				}
+				else
+				{
+					rightLeg = newRightLeg;
+					currentRightLegIndex = currentPortalIndex;
+				}
+			}
+			
+			if (currentPortalIndex < Portals.size())
+			{
+				rightLeg = Portals[currentRightLegIndex].P1 - currentApex;
+				leftLeg = Portals[currentLeftLegIndex].P2 - currentApex;
 			}
 			
 			//Left Check
 			
-			FVector2D leftLeg = Portals[currentLeftLegIndex].P2 - currentApex;
 			FVector2D newLeftLeg = Portals[currentPortalIndex].P2 - currentApex;
 			
 			float leftCross = FVector2D::CrossProduct(leftLeg, newLeftLeg);
 			
 			if (leftCross < 0)
 			{
-				FVector2D tempRightLeg = Portals[currentRightLegIndex].P1 - currentApex;
-				
-				float newLeftRightCross = FVector2D::CrossProduct(tempRightLeg, newLeftLeg);
+				float newLeftRightCross = FVector2D::CrossProduct(rightLeg, newLeftLeg);
 				if (newLeftRightCross < 0)
 				{
 					//we crossed the right leg
+					currentApex = currentApex + rightLeg;
+					currentApexIndex = currentRightLegIndex;
+					currentPortalIndex = currentLeftLegIndex + 1;
+					currentLeftLegIndex = currentPortalIndex;
+					currentRightLegIndex = currentPortalIndex;
 					
+					Path.push_back(currentApex);
+				}
+				else
+				{
+					leftLeg = newLeftLeg;
+					currentLeftLegIndex = currentPortalIndex;
 				}
 			}
+			
+			if (currentPortalIndex < Portals.size())
+			{
+				rightLeg = Portals[currentRightLegIndex].P1 - currentApex;
+				leftLeg = Portals[currentLeftLegIndex].P2 - currentApex;
+			}
 		}
+		
+		Path.push_back(Portals[Portals.size()-1].P2);
 		
 		return Path;
 	}
