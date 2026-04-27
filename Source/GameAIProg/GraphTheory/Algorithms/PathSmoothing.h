@@ -20,6 +20,9 @@ public:
 		//Container
 		std::vector<NavLine> Portals = {};
 		
+		if (Path.size() == 0)
+			return Portals;
+		
 		Portals.push_back(NavLine{Path[0]->GetPosition(), Path[0]->GetPosition()});
 		
 		//For each node received, get it's corresponding line
@@ -70,6 +73,10 @@ public:
 	static std::vector<FVector2D> OptimizePortals( std::vector<NavLine> const & Portals, TriPolygon const & NavPoly)
 	{
 		std::vector<FVector2D> Path{};
+		if (Portals.size() == 0)
+		{
+			return Path;
+		}
 		
 		FVector2D currentApex = Portals[0].P2;
 		int currentApexIndex = 0;
@@ -80,10 +87,9 @@ public:
 		FVector2D rightLeg = Portals[currentRightLegIndex].P1 - currentApex;
 		FVector2D leftLeg = Portals[currentLeftLegIndex].P2 - currentApex;
 		
-		int currentPortalIndex = 2;
 		
 		bool hasReachedEnd = false;
-		while (currentPortalIndex != Portals.size() -1)
+		for ( int currentPortalIndex{1}; currentPortalIndex < Portals.size(); currentPortalIndex++)
 		{
 			//Right check
 			
@@ -94,7 +100,7 @@ public:
 			if (rightCross > 0)
 			{
 				float newRightLeftCross = FVector2D::CrossProduct(leftLeg, newRightLeg);
-				if (newRightLeftCross > 0)
+				if (newRightLeftCross < 0)
 				{
 					//we crossed the left leg
 					currentApex = currentApex + leftLeg;
@@ -127,7 +133,7 @@ public:
 			if (leftCross < 0)
 			{
 				float newLeftRightCross = FVector2D::CrossProduct(rightLeg, newLeftLeg);
-				if (newLeftRightCross < 0)
+				if (newLeftRightCross > 0)
 				{
 					//we crossed the right leg
 					currentApex = currentApex + rightLeg;
