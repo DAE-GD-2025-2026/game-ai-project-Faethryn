@@ -80,7 +80,7 @@ public:
 		int currentPortalIndex = 2;
 		
 		bool hasReachedEnd = false;
-		while (!hasReachedEnd)
+		while (currentPortalIndex != Portals.size() -1)
 		{
 			//Right check
 			
@@ -91,21 +91,36 @@ public:
 			
 			if (rightCross > 0)
 			{
+				FVector2D tempLeftLeg = Portals[currentLeftLegIndex].P2 - currentApex;
 				
+				float newRightLeftCross = FVector2D::CrossProduct(tempLeftLeg, newRightLeg);
+				if (newRightLeftCross > 0)
+				{
+					//we crossed the left leg
+					
+				}
 			}
 			
 			//Left Check
 			
-			FVector2D leftLeg = Portals[currentRightLegIndex].P2 - currentApex;
+			FVector2D leftLeg = Portals[currentLeftLegIndex].P2 - currentApex;
 			FVector2D newLeftLeg = Portals[currentPortalIndex].P2 - currentApex;
 			
 			float leftCross = FVector2D::CrossProduct(leftLeg, newLeftLeg);
 			
 			if (leftCross < 0)
 			{
+				FVector2D tempRightLeg = Portals[currentRightLegIndex].P1 - currentApex;
 				
+				float newLeftRightCross = FVector2D::CrossProduct(tempRightLeg, newLeftLeg);
+				if (newLeftRightCross < 0)
+				{
+					//we crossed the right leg
+					
+				}
 			}
 		}
+		
 		return Path;
 	}
 private:
