@@ -67,6 +67,7 @@ SteeringOutput Arrive::CalculateSteering(float DeltaT, ASteeringAgent& Agent)
 		if (distance >= m_OuterRadius)
 		{
 			speed = Agent.GetCachedMaxSpeed();
+			Agent.ResetCachedValues();
 		}
 		else
 		{

@@ -63,8 +63,8 @@ void ASteeringAgent::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void ASteeringAgent::SetSteeringBehavior(ISteeringBehavior* NewSteeringBehavior)
 {
-	SteeringBehavior = NewSteeringBehavior;
 	ResetCachedValues();
+	SteeringBehavior = NewSteeringBehavior;
 }
 
 void ASteeringAgent::ResetCachedValues()

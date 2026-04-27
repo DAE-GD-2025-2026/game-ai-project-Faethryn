@@ -80,83 +80,83 @@ public:
 		
 		FVector2D currentApex = Portals[0].P2;
 		int currentApexIndex = 0;
-		
 		int currentRightLegIndex = 1;
 		int currentLeftLegIndex = 1;
 		
-		FVector2D rightLeg = Portals[currentRightLegIndex].P1 - currentApex;
-		FVector2D leftLeg = Portals[currentLeftLegIndex].P2 - currentApex;
+		Path.push_back(currentApex);
 		
-		
-		bool hasReachedEnd = false;
-		for ( int currentPortalIndex{1}; currentPortalIndex < Portals.size(); currentPortalIndex++)
+		for (int i {2}; i < Portals.size(); i++)
 		{
 			//Right check
 			
-			FVector2D newRightLeg = Portals[currentPortalIndex].P1 - currentApex;
+			FVector2D currentLeft = Portals[currentLeftLegIndex].P2 - currentApex;
+			FVector2D currentRight = Portals[currentRightLegIndex].P1 - currentApex;
 			
-			float rightCross = FVector2D::CrossProduct(rightLeg, newRightLeg);
+			FVector2D newRightLeg = Portals[i].P1 - currentApex;
+			
+			float rightCross = FVector2D::CrossProduct(currentRight, newRightLeg);
 			
 			if (rightCross > 0)
 			{
-				float newRightLeftCross = FVector2D::CrossProduct(leftLeg, newRightLeg);
-				if (newRightLeftCross < 0)
+				float newRightLeftCross = FVector2D::CrossProduct(currentLeft, newRightLeg);
+				if (newRightLeftCross > 0)
 				{
 					//we crossed the left leg
-					currentApex = currentApex + leftLeg;
+					currentApex = currentApex + currentLeft;
 					currentApexIndex = currentLeftLegIndex;
-					currentPortalIndex = currentRightLegIndex + 1;
-					currentLeftLegIndex = currentPortalIndex;
-					currentRightLegIndex = currentPortalIndex;
+					
+					currentLeftLegIndex = i;
+					currentRightLegIndex = i;
 					
 					Path.push_back(currentApex);
 				}
 				else
 				{
-					rightLeg = newRightLeg;
-					currentRightLegIndex = currentPortalIndex;
+					currentRight = newRightLeg;
+					currentRightLegIndex = i;
 				}
 			}
 			
-			if (currentPortalIndex < Portals.size())
+			if (i < Portals.size())
 			{
-				rightLeg = Portals[currentRightLegIndex].P1 - currentApex;
-				leftLeg = Portals[currentLeftLegIndex].P2 - currentApex;
+				currentRight = Portals[currentRightLegIndex].P1 - currentApex;
+				currentLeft = Portals[currentLeftLegIndex].P2 - currentApex;
 			}
 			
 			//Left Check
 			
-			FVector2D newLeftLeg = Portals[currentPortalIndex].P2 - currentApex;
+			FVector2D newLeftLeg = Portals[i].P2 - currentApex;
 			
-			float leftCross = FVector2D::CrossProduct(leftLeg, newLeftLeg);
+			float leftCross = FVector2D::CrossProduct(currentLeft, newLeftLeg);
 			
 			if (leftCross < 0)
 			{
-				float newLeftRightCross = FVector2D::CrossProduct(rightLeg, newLeftLeg);
-				if (newLeftRightCross > 0)
+				float newLeftRightCross = FVector2D::CrossProduct(currentRight, newLeftLeg);
+				if (newLeftRightCross < 0)
 				{
 					//we crossed the right leg
-					currentApex = currentApex + rightLeg;
+					currentApex = currentApex + currentRight;
 					currentApexIndex = currentRightLegIndex;
-					currentPortalIndex = currentLeftLegIndex + 1;
-					currentLeftLegIndex = currentPortalIndex;
-					currentRightLegIndex = currentPortalIndex;
+					
+					currentLeftLegIndex = i;
+					currentRightLegIndex = i;
 					
 					Path.push_back(currentApex);
 				}
 				else
 				{
-					leftLeg = newLeftLeg;
-					currentLeftLegIndex = currentPortalIndex;
+					currentLeft = newLeftLeg;
+					currentLeftLegIndex = i;
 				}
 			}
 			
-			if (currentPortalIndex < Portals.size())
+			if (i < Portals.size())
 			{
-				rightLeg = Portals[currentRightLegIndex].P1 - currentApex;
-				leftLeg = Portals[currentLeftLegIndex].P2 - currentApex;
+				currentRight = Portals[currentRightLegIndex].P1 - currentApex;
+				currentLeft = Portals[currentLeftLegIndex].P2 - currentApex;
 			}
 		}
+		
 		
 		Path.push_back(Portals[Portals.size()-1].P2);
 		
