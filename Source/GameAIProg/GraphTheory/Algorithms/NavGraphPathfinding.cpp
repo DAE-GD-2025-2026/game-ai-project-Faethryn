@@ -35,9 +35,9 @@ std::vector<FVector2D> NavMeshPathfinding::FindPath(const FVector2D& startPos, c
 	
 	std::unique_ptr<NavGraph> tempGraph = pNavGraph->Clone();
 
-	//Create Extra node for the Start Node (Agent's position
+	//Create Extra node for the Start Node (Agent's position)
 	
-	int startNodeID = tempGraph->AddNode(std::make_unique<Node>(startPos));
+	int startNodeID = tempGraph->AddNode(std::make_unique<NavGraphNode>(startPos, -1));
 	
 	for (auto edge : startTriangle->GetEdges())
 	{
@@ -49,7 +49,7 @@ std::vector<FVector2D> NavMeshPathfinding::FindPath(const FVector2D& startPos, c
 
 	//Create extra node for the endNode
 
-	int endNodeID = tempGraph->AddNode(std::make_unique<Node>(endPos));
+	int endNodeID = tempGraph->AddNode(std::make_unique<NavGraphNode>(endPos, -1));
 	
 	for (auto edge : endTriangle->GetEdges())
 	{
@@ -74,8 +74,8 @@ std::vector<FVector2D> NavMeshPathfinding::FindPath(const FVector2D& startPos, c
 	}
 
 	// Extra: Run optimiser on new graph (First check if everything works without SSFA!)
-	// debugPortals = SSFA::FindPortals(nodes, *pNavGraph->GetNavPolygon());
-	// finalPath = SSFA::OptimizePortals(debugPortals, *pNavGraph->GetNavPolygon());
+	debugPortals = SSFA::FindPortals(pathNodes, *pNavGraph->GetNavPolygon());
+	finalPath = SSFA::OptimizePortals(debugPortals, *pNavGraph->GetNavPolygon());
 	
 	return finalPath;
 }
