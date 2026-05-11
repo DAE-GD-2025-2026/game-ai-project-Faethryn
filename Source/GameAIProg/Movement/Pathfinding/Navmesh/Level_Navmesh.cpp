@@ -3,8 +3,11 @@
 
 #include "Level_Navmesh.h"
 
+
+
 #include "NavigationSystem.h"
 #include "AI/NavigationSystemBase.h"
+#include "DebugUtils/DetourDebugDraw.h"
 #include "GraphTheory/Algorithms/AStar.h"
 #include "GraphTheory/Algorithms/NavGraphPathfinding.h"
 #include "NavMesh/RecastNavMesh.h"
@@ -58,7 +61,7 @@ void ALevel_Navmesh::BeginPlay()
 		false, 
 		false, 
 		true, 
-		false
+		true
 	});
 }
 
@@ -100,21 +103,16 @@ void ALevel_Navmesh::Tick(float DeltaTime)
 	// Todo: Draw the portals travelled through with SSFA
 	 if (bDrawPortals)
 	 {
-	 	for (int i{0}; i < NavigationGraph->GetNodes().size(); i++)
+	 	
+	 	for (int i{0}; i < DebugNodePositions.size(); ++i)
 	 	{
-	 		DrawDebugSphere(GetWorld(),FVector(NavigationGraph->GetNodes()[i]->GetPosition().X,
-	 			5.0f, NavigationGraph->GetNodes()[i]->GetPosition().Y)
-	 			,10.f, 8, FColor::Red );
+	 		FVector Begin = FVector{DebugNodePositions[i].P1, 20.0f};
+	 		FVector End = FVector{DebugNodePositions[i].P2, 20.0f};
+	 		
+	 		DrawDebugLine(GetWorld(), Begin, End,FColor::Cyan,
+	 			false);
 	 	}
 	 	
-	 	for (int i{0}; i < NavigationGraph->GetConnections().size(); i++)
-	 	{
-	 		FVector2D position1 = NavigationGraph->GetNode(NavigationGraph->GetConnections()[i]->GetFromId())->GetPosition();
-	 		FVector2D position2 = NavigationGraph->GetNode(NavigationGraph->GetConnections()[i]->GetToId())->GetPosition();
-	 		
-	 		DrawDebugLine(GetWorld(), FVector{position1.X, 5.0f, position1.Y},
-	 			FVector{position2.X, 5.0f, position2.Y}, FColor::Green);
-	 	}
 	 }
 	
 	UpdateImGui();
@@ -229,10 +227,14 @@ TArray<TArray<FVector>> ALevel_Navmesh::ExtractNavMeshTris() const
 void ALevel_Navmesh::SetTarget()
 {
 	GameAI::NavMeshPathfinding Pathfinder{};
+	std::vector<FVector2D> debugPath{};
+	std::vector<GameAI::NavLine> debugNodePositions{};
 	std::vector<FVector2D> Path =  Pathfinder.FindPath(Agent->GetPosition(), 
-	FVector2D{LatestMouseWorldPos}, NavigationGraph.get());
+	FVector2D{LatestMouseWorldPos}, NavigationGraph.get(), debugPath, debugNodePositions);
 
 	DebugDrawPath = Path;
+	
+	DebugNodePositions = debugNodePositions;
 	
 	PathFollow.SetPath(Path);
 	if (Path.size() > 0)

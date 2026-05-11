@@ -20,8 +20,8 @@ void ASteeringAgent::BeginPlay()
 
 void ASteeringAgent::BeginDestroy()
 {
+	//ResetCachedValues();
 	Super::BeginDestroy();
-	ResetCachedValues();
 }
 
 void ASteeringAgent::CacheStartingValues()

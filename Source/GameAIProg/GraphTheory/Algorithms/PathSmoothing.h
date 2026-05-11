@@ -94,12 +94,16 @@ public:
 			
 			FVector2D newRightLeg = Portals[i].P1 - currentApex;
 			
+			currentRight.Normalize();
+			newRightLeg.Normalize();
+			currentLeft.Normalize();
+			
 			float rightCross = FVector2D::CrossProduct(currentRight, newRightLeg);
 			
-			if (rightCross > 0)
+			if (rightCross < 0)
 			{
 				float newRightLeftCross = FVector2D::CrossProduct(currentLeft, newRightLeg);
-				if (newRightLeftCross > 0)
+				if (newRightLeftCross < 0)
 				{
 					//we crossed the left leg
 					currentApex = currentApex + currentLeft;
@@ -126,13 +130,14 @@ public:
 			//Left Check
 			
 			FVector2D newLeftLeg = Portals[i].P2 - currentApex;
+			newLeftLeg.Normalize();
 			
 			float leftCross = FVector2D::CrossProduct(currentLeft, newLeftLeg);
 			
-			if (leftCross < 0)
+			if (leftCross > 0)
 			{
 				float newLeftRightCross = FVector2D::CrossProduct(currentRight, newLeftLeg);
-				if (newLeftRightCross < 0)
+				if (newLeftRightCross > 0)
 				{
 					//we crossed the right leg
 					currentApex = currentApex + currentRight;
@@ -158,7 +163,7 @@ public:
 		}
 		
 		
-		Path.push_back(Portals[Portals.size()-1].P2);
+		//Path.push_back(Portals[Portals.size()-1].P2);
 		
 		return Path;
 	}

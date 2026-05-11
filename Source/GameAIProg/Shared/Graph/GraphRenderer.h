@@ -128,6 +128,9 @@ namespace GameAI
 		FVector Start{Graph.GetNode(Connection.GetFromId())->GetPosition(), Graphs::DefaultGraphDrawHeight};
 		FVector End{Graph.GetNode(Connection.GetToId())->GetPosition(), Graphs::DefaultGraphDrawHeight};
 	
+		DrawDebugSphere(World, Start, 20.f, 6, FColor::Orange, 0);
+		DrawDebugSphere(World, End, 20.f, 6, FColor::Orange, 0);
+		
 		if (!Graph.GetIsDirectional())
 		{
 			DrawDebugLine(World, Start, End, Color, 
@@ -142,8 +145,8 @@ namespace GameAI
 		// Draw weight
 		if (Options.bDrawConnectionWeights)
 		{
-			FVector Middle = End + (Start - End) / 2;
-			
+			FVector Middle = (End + Start) / 2.f;
+
 			FString WeightString{FString::Printf(TEXT("%d"), static_cast<int>(Connection.GetWeight()))};
 			DrawDebugString(World, Middle, WeightString,nullptr, FColor::White, 0);
 		}
